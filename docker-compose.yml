@@ -11,10 +11,13 @@ services:
     ports:
       - "${MYSQL_PORT:-3307}:3306"
     volumes:
-      # Данные БД лежат в папке проекта, а НЕ в именованном томе.
-      # Поэтому `docker compose down -v` их НЕ стирает, и они едут вместе с папкой.
-      # Первый старт на пустой папке наполняет БД из docker/init/01_database.sql.
-      - ./docker/mysql-data:/var/lib/mysql
+      # Данные БД — в именованном Docker-томе (надёжнее, чем bind-mount в папку
+      # Windows: файлы нельзя случайно удалить «из-под» работающего mysqld).
+      # `docker compose down` данные сохраняет; `docker compose down -v` стирает
+      # том, и при следующем старте БД пересоздаётся из docker/init/01_database.sql.
+      # Перенести данные на другую машину: docker/snapshot-db.ps1 — он обновляет
+      # снимок 01_database.sql, который уезжает вместе с репозиторием.
+      - shire_db_data:/var/lib/mysql
       - ./docker/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
@@ -41,3 +44,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+volumes:
+  # Именованный том для данных MySQL. Живёт внутри Docker, а не в папке проекта —
+  # его не видно в проводнике и нельзя случайно снести. Удаляется только явно
+  # через `docker compose down -v`.
+  shire_db_data:
