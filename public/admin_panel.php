@@ -1348,48 +1348,21 @@ if ($dgRes) while ($dgRow = $dgRes->fetch_assoc()) $dish_gallery[] = $dgRow;
   </div>
 </div>
 
-<!-- Именованные слоты сайта -->
-<div style="background:var(--parch-50);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;margin-bottom:24px;">
-  <h3 style="font-size:1rem;margin:0 0 6px;">Слоты сайта (главная, команда и галерея)</h3>
-  <p style="margin:0 0 14px;color:var(--ink-mute);font-size:0.85rem;">Загрузите фото в панели выше, в первом списке выберите тип (Команда / Галерея / Главная), во втором — конкретное место, и нажмите «Сохранить» — фото сразу появится на сайте. Размеры указаны рекомендованные. Фото блюд назначаются так же: тип «Блюдо» → выбор блюда.</p>
-  <?php
-    $slotMap = [];
-    $smRes = $conn->query("SELECT slot_key, image_path FROM gallery_images WHERE slot_key <> ''");
-    if ($smRes) while ($smRow = $smRes->fetch_assoc()) $slotMap[$smRow['slot_key']] = $smRow['image_path'];
-  ?>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;">
-    <?php foreach (site_image_slots() as $key => $info):
-      $sp = $slotMap[$key] ?? '';
-      $hasFile = $sp !== '' && file_exists(__DIR__.'/'.$sp);
-    ?>
-    <div style="border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;background:var(--parch-100);">
-      <div style="height:96px;background:var(--parch-200);display:flex;align-items:center;justify-content:center;">
-        <?php if ($hasFile): ?>
-          <img src="<?= htmlspecialchars($sp) ?>" style="width:100%;height:100%;object-fit:cover;">
-        <?php else: ?>
-          <span style="color:var(--ink-faint);font-size:0.78rem;">нет фото</span>
-        <?php endif; ?>
-      </div>
-      <div style="padding:8px 10px;">
-        <div style="font-size:0.8rem;font-weight:600;line-height:1.25;"><?= htmlspecialchars($info[2]) ?></div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--amber-deep);margin-top:2px;"><?= htmlspecialchars($key) ?></div>
-        <div style="font-size:0.7rem;color:var(--ink-mute);margin-top:2px;"><?= htmlspecialchars($info[0].' · '.$info[1]) ?> · <?= $hasFile ? '<span style="color:var(--forest)">✓ задано</span>' : '— пусто' ?></div>
-      </div>
-    </div>
-    <?php endforeach; ?>
-  </div>
-</div>
-
 <!-- Gallery grid -->
 <?php
 // Reload gallery_images with all columns
 $allGalleryImages = [];
 $gAllRes = $conn->query("SELECT * FROM gallery_images ORDER BY sort_order ASC, id ASC");
 if ($gAllRes) while ($gRow = $gAllRes->fetch_assoc()) $allGalleryImages[] = $gRow;
+
+// Блюда из меню (исключаем служебные категории decor/chef) — показываем их в сетке как карточки «Блюдо»
+$dishItems = [];
+$diRes = $conn->query("SELECT id, title, category, price, weight, badge, is_special, description, image_path FROM menu_items WHERE category NOT IN ('decor','chef') ORDER BY category, id");
+if ($diRes) while ($dRow = $diRes->fetch_assoc()) $dishItems[] = $dRow;
 ?>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
   <div style="font-family:var(--font-display);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-mute);">
-    <?= count($allGalleryImages) ?> изображений
+    <?= count($allGalleryImages) + count($dishItems) ?> изображений
   </div>
   <div style="display:flex;gap:8px;">
     <button class="btn-small" onclick="filterGallery('all')">Все</button>
@@ -1432,7 +1405,39 @@ if ($gAllRes) while ($gRow = $gAllRes->fetch_assoc()) $allGalleryImages[] = $gRo
   </div>
 </div>
 <?php endforeach; ?>
-<?php if (empty($allGalleryImages)): ?>
+<?php foreach ($dishItems as $di):
+  $dImg = (!empty($di['image_path']) && file_exists(__DIR__.'/'.$di['image_path'])) ? htmlspecialchars($di['image_path']) : '';
+  $dEdit = htmlspecialchars(json_encode([
+    'id'          => (int)$di['id'],
+    'title'       => $di['title'],
+    'category'    => $di['category'],
+    'price'       => $di['price'] ?? '',
+    'weight'      => $di['weight'] ?? '',
+    'badge'       => $di['badge'] ?? '',
+    'is_special'  => (int)($di['is_special'] ?? 0),
+    'description' => $di['description'] ?? '',
+    'image_path'  => $di['image_path'] ?? '',
+  ], JSON_UNESCAPED_UNICODE), ENT_QUOTES);
+?>
+<div class="gallery-card" data-category="dish" data-dish-id="<?= $di['id'] ?>"
+     style="background:var(--parch-50);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--shadow-soft);">
+  <div style="aspect-ratio:4/3;background:var(--parch-200);overflow:hidden;position:relative;">
+    <?php if ($dImg): ?>
+      <img src="<?= $dImg ?>" alt="<?= htmlspecialchars($di['title']) ?>" style="width:100%;height:100%;object-fit:cover;">
+    <?php else: ?>
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--ink-faint);font-size:1.5rem;">&#127869;&#65039;</div>
+    <?php endif; ?>
+    <span style="position:absolute;top:8px;left:8px;background:var(--amber-deep);color:white;font-family:var(--font-display);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;padding:3px 7px;border-radius:10px;">Блюдо</span>
+  </div>
+  <div style="padding:10px 12px;">
+    <div style="font-size:0.86rem;font-weight:600;line-height:1.25;"><?= htmlspecialchars($di['title']) ?></div>
+    <div style="margin-top:3px;font-size:0.72rem;color:var(--ink-mute);"><?= htmlspecialchars($di['category']) ?><?= ($di['price'] ?? '') !== '' ? ' · '.htmlspecialchars($di['price']).' ₽' : '' ?></div>
+    <button type="button" class="btn-small" style="width:100%;margin-top:8px;"
+            data-edit-item="<?= $dEdit ?>" onclick="openEditItemFromData(this)" title="Открыть редактор блюда">&#9998; Изменить фото блюда</button>
+  </div>
+</div>
+<?php endforeach; ?>
+<?php if (empty($allGalleryImages) && empty($dishItems)): ?>
 <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ink-mute);font-style:italic;">Изображений нет — добавьте первое выше</div>
 <?php endif; ?>
 </div>
