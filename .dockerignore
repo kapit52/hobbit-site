@@ -1,0 +1,7 @@
+.git
+.cursor
+.env
+password.txt
+**/terminals
+# Данные MySQL (bind-mount) — не нужны в образе web
+docker/mysql-data

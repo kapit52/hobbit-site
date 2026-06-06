@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: shire_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-shire_corner}
+      MYSQL_USER: ${MYSQL_USER:-shire}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-shire_pass}
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      # Данные БД лежат в папке проекта, а НЕ в именованном томе.
+      # Поэтому `docker compose down -v` их НЕ стирает, и они едут вместе с папкой.
+      # Первый старт на пустой папке наполняет БД из docker/init/01_database.sql.
+      - ./docker/mysql-data:/var/lib/mysql
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  web:
+    build: .
+    container_name: shire_web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-shire_corner}
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy

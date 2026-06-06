@@ -1,0 +1,156 @@
+/* ============================================
+   Техническая админка — Ширский уголок
+   Поверх admin.css; добавляет «инженерный» акцент.
+   ============================================ */
+
+:root {
+  --tech-bg:    #0f1410;
+  --tech-panel: #151c16;
+  --tech-line:  #26342a;
+  --tech-ink:   #cfe6d4;
+  --tech-mute:  #7f9885;
+  --tech-acc:   #4ade80;   /* зелёный «ок» */
+  --tech-amber: #fbbf24;
+  --tech-red:   #f87171;
+  --tech-blue:  #60a5fa;
+}
+
+/* Отметить, что это «инженерный» раздел: тёмный сайдбар с зелёным акцентом */
+.admin-body.tech .admin-side {
+  background: linear-gradient(180deg, #0f1712, #0a0f0c);
+  border-right: 1px solid rgba(74, 222, 128, 0.18);
+}
+.admin-body.tech .admin-brand .sub { color: var(--tech-acc); }
+.admin-body.tech .admin-nav a.active {
+  background: rgba(74, 222, 128, 0.14);
+  color: #eafff0;
+  box-shadow: inset 2px 0 0 var(--tech-acc);
+}
+
+/* Переключение вкладок (в admin.css этих правил нет — они были только в
+   инлайн-стилях admin_panel.php, поэтому в тех-админке вкладки не скрывались). */
+.admin-section-content { display:none; }
+.admin-section-content.active { display:block; }
+
+.tech-tag {
+  display:inline-block; font-family:var(--font-display); font-size:0.6rem;
+  letter-spacing:0.14em; text-transform:uppercase; color:#0a0f0c;
+  background:var(--tech-acc); padding:2px 7px; border-radius:6px; margin-left:8px;
+  vertical-align:middle;
+}
+
+/* Сетки и плитки метрик */
+.tech-grid { display:grid; gap:16px; }
+.tech-grid.cols-4 { grid-template-columns:repeat(4,1fr); }
+.tech-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
+.tech-grid.cols-2 { grid-template-columns:repeat(2,1fr); }
+@media(max-width:1000px){ .tech-grid.cols-4 { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:760px){ .tech-grid.cols-4,.tech-grid.cols-3,.tech-grid.cols-2 { grid-template-columns:1fr; } }
+
+.metric {
+  background:var(--parch-50); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:18px 20px; display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden;
+}
+.metric .m-label { font-family:var(--font-display); text-transform:uppercase; letter-spacing:0.14em; font-size:0.66rem; color:var(--ink-mute); }
+.metric .m-value { font-family:var(--font-display); font-size:1.9rem; font-weight:700; color:var(--ink); line-height:1; }
+.metric .m-sub   { font-size:0.78rem; color:var(--ink-faint); }
+.metric .m-value.good { color:var(--forest); }
+.metric .m-value.warn { color:var(--ember); }
+.metric .m-value.bad  { color:var(--berry); }
+
+/* Карточки статуса систем */
+.status-card {
+  background:var(--parch-50); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:22px; border-left:5px solid var(--ink-faint);
+}
+.status-card.ok       { border-left-color:#3d8b40; }
+.status-card.degraded { border-left-color:var(--ember); }
+.status-card.down     { border-left-color:var(--berry); }
+.status-card .sc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.status-card .sc-title { font-family:var(--font-display); text-transform:uppercase; letter-spacing:0.12em; font-size:0.92rem; color:var(--ink); }
+.status-pill {
+  display:inline-flex; align-items:center; gap:7px; font-family:var(--font-display);
+  text-transform:uppercase; letter-spacing:0.1em; font-size:0.66rem; padding:4px 11px; border-radius:14px;
+}
+.status-pill::before { content:""; width:8px; height:8px; border-radius:50%; background:currentColor; box-shadow:0 0 0 0 currentColor; }
+.status-pill.ok       { background:rgba(61,139,64,0.14);  color:#2f7a33; }
+.status-pill.degraded { background:rgba(194,84,32,0.14);  color:var(--ember); }
+.status-pill.down     { background:rgba(139,31,58,0.12);  color:var(--berry); }
+.status-pill.live::before { animation:tech-pulse 1.4s infinite; }
+@keyframes tech-pulse { 0%{ box-shadow:0 0 0 0 rgba(74,222,128,0.5);} 70%{ box-shadow:0 0 0 8px rgba(74,222,128,0);} 100%{ box-shadow:0 0 0 0 rgba(74,222,128,0);} }
+
+.sc-checks { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.sc-checks li { display:flex; align-items:center; gap:10px; font-size:0.86rem; color:var(--ink-soft); }
+.sc-checks .ck { width:16px; height:16px; flex-shrink:0; }
+.sc-checks .ck.ok  { color:#3d8b40; }
+.sc-checks .ck.no  { color:var(--berry); }
+.sc-checks .ck-name { color:var(--ink-mute); min-width:120px; }
+.sc-checks .ck-detail { color:var(--ink-faint); font-size:0.8rem; margin-left:auto; font-family:var(--font-mono,monospace); }
+
+/* Терминал логов */
+.log-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.log-toolbar select, .log-toolbar input {
+  font:inherit; font-size:0.84rem; padding:7px 10px; border:1px solid var(--line);
+  border-radius:var(--r-sm); background:var(--parch-50); color:var(--ink);
+}
+.log-toolbar .spacer { margin-left:auto; }
+.log-console {
+  background:var(--tech-bg); border:1px solid var(--tech-line); border-radius:var(--r-md);
+  height:560px; overflow-y:auto; padding:12px 14px; font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:0.78rem; line-height:1.55; color:var(--tech-ink);
+}
+.log-line { display:flex; gap:10px; padding:1px 0; white-space:pre-wrap; word-break:break-word; border-bottom:1px solid rgba(255,255,255,0.03); }
+.log-line .lt { color:var(--tech-mute); flex-shrink:0; }
+.log-line .ll { flex-shrink:0; font-weight:600; width:64px; text-transform:uppercase; font-size:0.7rem; }
+.log-line .lc { color:#7dd3fc; flex-shrink:0; width:74px; }
+.log-line .lm { color:var(--tech-ink); }
+.log-line .lx { color:var(--tech-mute); }
+.log-line.lv-debug   .ll { color:#8aa0a8; }
+.log-line.lv-info    .ll { color:var(--tech-acc); }
+.log-line.lv-notice  .ll { color:#a3e635; }
+.log-line.lv-warning .ll { color:var(--tech-amber); }
+.log-line.lv-warning .lm { color:#fde68a; }
+.log-line.lv-error   .ll, .log-line.lv-error .lm    { color:var(--tech-red); }
+.log-line.lv-critical .ll, .log-line.lv-critical .lm { color:#fff; }
+.log-line.lv-critical { background:rgba(248,113,113,0.12); }
+.log-empty { color:var(--tech-mute); text-align:center; padding:40px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; }
+
+/* Логеры */
+.logger-row {
+  display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--line);
+  border-radius:var(--r-md); background:var(--parch-50); margin-bottom:10px;
+}
+.logger-row .lg-name { font-family:var(--font-display); letter-spacing:0.06em; font-size:0.95rem; color:var(--ink); min-width:160px; }
+.logger-row .lg-key { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--ink-faint); }
+.logger-row .lg-spacer { margin-left:auto; }
+.logger-row select { font:inherit; font-size:0.84rem; padding:6px 10px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--parch-100); }
+
+/* Переключатель */
+.tech-switch { position:relative; display:inline-block; width:44px; height:24px; }
+.tech-switch input { opacity:0; width:0; height:0; }
+.tech-switch .sl { position:absolute; inset:0; background:#c4b393; border-radius:24px; transition:0.2s; cursor:pointer; }
+.tech-switch .sl::before { content:""; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:0.2s; }
+.tech-switch input:checked + .sl { background:#3d8b40; }
+.tech-switch input:checked + .sl::before { transform:translateX(20px); }
+
+/* Swagger контейнер */
+#swaggerUI { background:#fff; border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; }
+#swaggerUI .swagger-ui .topbar { display:none; }
+.swagger-frame-note { font-size:0.82rem; color:var(--ink-mute); margin-bottom:12px; }
+
+/* Спарклайн в метрике */
+.metric .spark { position:absolute; right:0; bottom:0; width:55%; height:38px; opacity:0.5; }
+
+/* Мини-таблица БД */
+.tech-table { width:100%; border-collapse:collapse; font-size:0.84rem; }
+.tech-table th { text-align:left; font-family:var(--font-display); text-transform:uppercase; letter-spacing:0.1em; font-size:0.64rem; color:var(--ink-mute); padding:8px 10px; border-bottom:1px solid var(--line); }
+.tech-table td { padding:7px 10px; border-bottom:1px solid var(--line-soft); }
+.tech-table td.num { text-align:right; font-family:'JetBrains Mono',monospace; }
+
+.tech-refresh-note { font-size:0.74rem; color:var(--ink-faint); font-family:'JetBrains Mono',monospace; }
+.kv-list { list-style:none; margin:0; padding:0; }
+.kv-list li { display:flex; gap:12px; padding:7px 0; border-bottom:1px solid var(--line-soft); font-size:0.86rem; }
+.kv-list li .k { color:var(--ink-mute); min-width:190px; }
+.kv-list li .v { color:var(--ink); font-family:'JetBrains Mono',monospace; word-break:break-all; }
+.ext-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.ext-chips span { font-family:'JetBrains Mono',monospace; font-size:0.72rem; background:var(--parch-100); border:1px solid var(--line); padding:3px 8px; border-radius:6px; color:var(--ink-soft); }
