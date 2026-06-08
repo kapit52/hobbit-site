@@ -22,3 +22,9 @@ Thumbs.db
 # ── PHP / зависимости ─────────────────────────────────────────────
 vendor/
 composer.lock
+db.png
+order_lifecycle.png
+ДИАГРАММЫ.md
+guest_reservation_lifecycle.png
+варианты использования.png
+IDEF0_1.png
