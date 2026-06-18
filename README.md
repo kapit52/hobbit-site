@@ -125,6 +125,23 @@ sh docker/snapshot-db.sh    # Linux/Mac
 
 ---
 
+## Тесты
+
+Юнит-тесты на **PHPUnit 10** (без Composer, через `tests/tools/phpunit.phar`).
+Покрывают «чистые» функции-хелперы — телефоны, цены, скидки, статусы, слоты брони.
+
+```bash
+# один раз скачать PHPUnit:
+#   PowerShell: Invoke-WebRequest https://phar.phpunit.de/phpunit-10.5.phar -OutFile tests/tools/phpunit.phar
+# прогон (стек поднят):
+docker compose exec web php tests/tools/phpunit.phar --testdox
+```
+
+Текущий результат: `OK (47 tests, 49 assertions)`. Подробнее — в
+**[tests/README.md](tests/README.md)** и в разделе 17 документации.
+
+---
+
 ## Переменные окружения
 
 Файл `.env` (создать по образцу `.env.example`):
