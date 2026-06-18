@@ -172,8 +172,8 @@ function ru_date($dt) { global $months_ru; foreach ($months_ru as $en=>$ru) $dt=
   .write-review{background:linear-gradient(135deg,rgba(184,134,11,0.05),rgba(107,142,78,0.08)),var(--parch-50);border:1px solid var(--line);border-radius:var(--r-md);padding:40px;margin:30px 0 60px;position:relative;overflow:hidden;}
   .write-review::before{content:"";position:absolute;top:0;left:0;width:200px;height:200px;background:url('assets/vine-corner.svg') no-repeat;background-size:contain;opacity:0.3;pointer-events:none;}
   .write-review h2{margin-bottom:8px;}
-  .star-rating{display:inline-flex;gap:8px;font-size:3rem;margin-bottom:18px;}
-  .star-rating label{color:var(--parch-300);cursor:pointer;transition:color 0.15s;line-height:1;}
+  .star-rating{display:inline-flex;gap:12px;font-size:4.2rem;margin-bottom:18px;}
+  .star-rating label{font-size:inherit;color:var(--parch-300);cursor:pointer;transition:color 0.15s;line-height:1;}
   .star-rating input{display:none;}
   .star-rating input:checked ~ label,.star-rating label:hover,.star-rating label:hover ~ label{color:var(--gold);}
   .star-rating{flex-direction:row-reverse;}
@@ -188,7 +188,7 @@ function ru_date($dt) { global $months_ru; foreach ($months_ru as $en=>$ru) $dt=
     .rev-filters .chip{padding:6px 12px;font-size:0.68rem;}
     .write-review{padding:20px 16px;}
     .rev-item{padding:20px 18px;}
-    .star-rating{font-size:2.4rem;}
+    .star-rating{font-size:3.4rem;gap:10px;}
   }
   /* Пустой список отзывов */
   .rev-empty{text-align:center;padding:60px 24px 66px;border:1px dashed var(--line);border-radius:var(--r-lg);background:var(--parch-50);margin:10px 0 48px;}
