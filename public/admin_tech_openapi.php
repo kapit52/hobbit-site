@@ -26,7 +26,7 @@ $spec = [
         'title'       => 'Ширский уголок — HTTP API',
         'version'     => '1.0.0',
         'description' => "Эндпоинты сайта-ресторана: корзина, загрузка изображений (админ) и служебный API технической панели.\n\n"
-                       . "Большинство публичных эндпоинтов работают с PHP-сессией (cookie). Админские — требуют сессию `SHIREADMIN`.",
+                       . "Большинство публичных эндпоинтов работают с PHP-сессией (cookie). Админские — требуют вход пользователя с ролью `admin`.",
     ],
     'servers' => [['url' => $baseUrl, 'description' => 'Текущий сервер']],
     'tags' => [
@@ -160,41 +160,24 @@ $spec = [
                 'responses' => ['200' => ['description' => 'JSON', 'content' => ['application/json' => ['schema' => ['type' => 'object']]]]],
             ],
         ],
-        '/admin_login.php' => [
+        '/login.php' => [
             'post' => [
                 'tags' => ['Авторизация'],
-                'summary' => 'Вход администратора',
-                'description' => 'Устанавливает сессию SHIREADMIN. Принимает почту или логин.',
+                'summary' => 'Вход (гость и администратор)',
+                'description' => 'Единая форма входа. Пользователь с ролью admin после входа '
+                    . 'получает доступ к управлению; обычный гость — к личному кабинету.',
                 'requestBody' => [
                     'required' => true,
                     'content' => ['application/x-www-form-urlencoded' => ['schema' => [
                         'type' => 'object',
                         'required' => ['username', 'password'],
                         'properties' => [
-                            'username' => ['type' => 'string', 'example' => 'admin@shire-corner.local'],
+                            'username' => ['type' => 'string', 'format' => 'email', 'example' => 'admin@shire.com'],
                             'password' => ['type' => 'string', 'format' => 'password'],
                         ],
                     ]]],
                 ],
-                'responses' => ['302' => ['description' => 'Редирект на admin_panel.php при успехе']],
-            ],
-        ],
-        '/login.php' => [
-            'post' => [
-                'tags' => ['Авторизация'],
-                'summary' => 'Вход гостя',
-                'requestBody' => [
-                    'required' => true,
-                    'content' => ['application/x-www-form-urlencoded' => ['schema' => [
-                        'type' => 'object',
-                        'required' => ['email', 'password'],
-                        'properties' => [
-                            'email'    => ['type' => 'string', 'format' => 'email'],
-                            'password' => ['type' => 'string', 'format' => 'password'],
-                        ],
-                    ]]],
-                ],
-                'responses' => ['302' => ['description' => 'Редирект при успехе']],
+                'responses' => ['302' => ['description' => 'Редирект при успехе (админ — на admin_panel.php)']],
             ],
         ],
     ],
@@ -203,8 +186,8 @@ $spec = [
             'adminSession' => [
                 'type' => 'apiKey',
                 'in'   => 'cookie',
-                'name' => 'SHIREADMIN',
-                'description' => 'Cookie-сессия администратора (выставляется admin_login.php).',
+                'name' => 'PHPSESSID',
+                'description' => 'Единая cookie-сессия. Доступ к управлению — у пользователя с ролью admin.',
             ],
         ],
     ],

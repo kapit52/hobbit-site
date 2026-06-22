@@ -1,8 +1,7 @@
 <?php
-// Админ-панель использует ОТДЕЛЬНУЮ cookie-сессию (SHIREADMIN), чтобы можно было
-// одновременно быть авторизованным как обычный пользователь (в других вкладках) и как админ.
+// Админка работает в ЕДИНОЙ пользовательской сессии: админ входит через обычную
+// форму login.php, доступ сюда даёт роль 'admin' (см. auth_admin.php).
 if (session_status() === PHP_SESSION_NONE) {
-    session_name('SHIREADMIN');
     session_start();
 }
 require_once __DIR__ . '/auth_admin.php';

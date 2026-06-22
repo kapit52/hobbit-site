@@ -64,12 +64,13 @@ if (!function_exists('_nav_active')) {
       <a href="reviews.php"<?= _nav_active('reviews.php') ?>>Отзывы</a>
       <a href="contacts.php"<?= _nav_active('contacts.php') ?>>Контакты</a>
       <span class="nav-divider"></span>
-      <?php if (is_admin_logged_in()): ?>
-        <a href="admin_panel.php" class="nav-profile-btn" title="Управление">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zM12 12c-5.3 0-8 2.7-8 4v1h16v-1c0-1.3-2.7-4-8-4z" fill="currentColor" stroke="none"/></svg>
-          Управление<?= $_nav_pending_badge ?>
-        </a>
-      <?php elseif (is_user_logged_in()): ?>
+      <?php if (is_user_logged_in()): ?>
+        <?php if (is_admin_logged_in()): ?>
+          <a href="admin_panel.php" class="nav-profile-btn<?= in_array($_nav_current, ['admin_panel.php','admin_order.php','admin_booking_calendar.php','admin_tech.php'], true) ? ' active' : '' ?>" title="Управление таверной">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zM12 12c-5.3 0-8 2.7-8 4v1h16v-1c0-1.3-2.7-4-8-4z" fill="currentColor" stroke="none"/></svg>
+            Управление<?= $_nav_pending_badge ?>
+          </a>
+        <?php endif; ?>
         <a href="profile.php" class="nav-profile-btn <?= $_nav_current === 'profile.php' ? 'active' : '' ?>">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none"><path d="M12 3c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zM12 12c-5.3 0-8 2.7-8 4v1h16v-1c0-1.3-2.7-4-8-4z"/></svg>
           Мой уголок<?= $_nav_user_notif_badge ?>

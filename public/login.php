@@ -18,11 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            if (($user['role'] ?? 'user') === 'admin') {
-                $error = 'Для администратора — страница входа в <a href="admin_login.php">админ-панель</a>';
-            } elseif (password_verify($password, $user['password'])) {
-                set_user_session((int)$user['id'], $user['username']);
+            if (password_verify($password, $user['password'])) {
+                $role = $user['role'] ?? 'user';
+                set_user_session((int)$user['id'], $user['username'], $role);
                 $returnTo = $_POST['return_to'] ?? '';
+                // Админа без явного return_to ведём сразу в управление.
+                if ($role === 'admin' && $returnTo === '') {
+                    header('Location: admin_panel.php');
+                    exit;
+                }
                 redirect_after_auth($returnTo);
             } else {
                 $error = 'Неверный пароль';

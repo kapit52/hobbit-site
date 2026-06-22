@@ -2,7 +2,7 @@
 require_once 'includes/admin_auth.php';
 require_once 'includes/booking_helpers.php';
 require_once 'includes/order_helpers.php';
-$admin_username = $_SESSION['admin_username'] ?? 'Администратор';
+$admin_username = $_SESSION['username'] ?? 'Администратор';
 $admin_initials = mb_strtoupper(mb_substr($admin_username, 0, 2));
 $counts = get_pending_counts($conn);
 

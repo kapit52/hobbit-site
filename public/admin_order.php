@@ -44,7 +44,7 @@ $stmt->bind_param('i', $orderId); $stmt->execute();
 $res = $stmt->get_result(); while ($row = $res->fetch_assoc()) $history[] = $row; $stmt->close();
 
 $counts = get_pending_counts($conn);
-$admin_username = $_SESSION['admin_username'] ?? 'Администратор';
+$admin_username = $_SESSION['username'] ?? 'Администратор';
 $admin_initials = mb_strtoupper(mb_substr($admin_username, 0, 2));
 
 $statusSteps = ['pending'=>1,'confirmed'=>2,'preparing'=>3,'ready'=>4,'completed'=>5];

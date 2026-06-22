@@ -397,7 +397,7 @@ $reviews = $conn->query("SELECT * FROM reviews ORDER BY id DESC");
 $tables = $conn->query("SELECT * FROM restaurant_tables ORDER BY zone, seats");
 $promos = $conn->query("SELECT * FROM promo_codes ORDER BY is_active DESC, id DESC");
 $counts = get_pending_counts($conn);
-$admin_username = $_SESSION['admin_username'] ?? 'Администратор';
+$admin_username = $_SESSION['username'] ?? 'Администратор';
 $admin_initials = mb_strtoupper(mb_substr($admin_username, 0, 2));
 $active_section = $_GET['section'] ?? ($flashSection ?: (isset($_GET['order_status']) ? 'orders' : (isset($_GET['booking_status']) || isset($_GET['booking_date']) ? 'bookings' : 'dashboard')));
 

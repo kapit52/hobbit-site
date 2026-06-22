@@ -2,19 +2,12 @@
 require_once 'includes/auth_user.php';
 require_once 'includes/auth_admin.php';
 
+// Единая сессия: выход из админки и из кабинета — это один и тот же сеанс.
 $type = $_GET['type'] ?? 'user';
 
-if ($type === 'admin') {
-    // Выходим только из админ-сессии (SHIREADMIN), пользовательская не трогается
-    session_name('SHIREADMIN');
-    session_start();
-    clear_admin_session();
-    header('Location: admin_login.php');
-    exit;
-}
-
-// Пользовательская сессия (имя cookie по умолчанию)
 session_start();
-clear_user_session();
-header('Location: index.php');
+clear_user_session();   // снимает и user_role, т.е. и админ-права
+
+// Из управления возвращаем на форму входа, из кабинета — на главную.
+header('Location: ' . ($type === 'admin' ? 'login.php' : 'index.php'));
 exit;

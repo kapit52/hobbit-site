@@ -1,34 +1,37 @@
 <?php
 /**
- * Сессия администратора (независима от сессии клиента в той же PHP-сессии).
+ * Права администратора в рамках ЕДИНОЙ пользовательской сессии.
+ *
+ * Отдельной формы/сессии для админа больше нет: админ входит через обычную
+ * форму login.php, а доступ к управлению определяется ролью пользователя
+ * ($_SESSION['user_role'] === 'admin'). Проверка опирается только на сессию,
+ * без обращения к БД, — поэтому работает и в «облегчённой» техкадминке.
  */
 
 function is_admin_logged_in(): bool {
-    return isset($_SESSION['admin_user_id']) && (int)$_SESSION['admin_user_id'] > 0;
+    return isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] > 0
+        && ($_SESSION['user_role'] ?? '') === 'admin';
 }
 
 function require_admin_login(): void {
     if (!is_admin_logged_in()) {
-        header('Location: admin_login.php');
+        header('Location: login.php');
         exit;
     }
 }
 
 function clear_admin_session(): void {
-    unset(
-        $_SESSION['admin_user_id'],
-        $_SESSION['admin_username'],
-        $_SESSION['admin'],
-        $_SESSION['admin_role']
-    );
+    // Единая сессия: снять админ-права = сбросить роль пользователя.
+    unset($_SESSION['user_role']);
 }
 
 function set_admin_session(int $userId, string $username): void {
-    $_SESSION['admin_user_id'] = $userId;
-    $_SESSION['admin_username'] = $username;
-    $_SESSION['admin_role'] = 'admin';
+    // Пометить текущую (единую) сессию как админскую.
+    $_SESSION['user_id']   = $userId;
+    $_SESSION['username']  = $username;
+    $_SESSION['user_role'] = 'admin';
 }
 
 function get_admin_username(): string {
-    return $_SESSION['admin_username'] ?? 'Админ';
+    return $_SESSION['username'] ?? 'Админ';
 }

@@ -22,6 +22,7 @@ function clear_user_session(): void {
     unset(
         $_SESSION['user_id'],
         $_SESSION['username'],
+        $_SESSION['user_role'],
         $_SESSION['order_id'],
         $_SESSION['order_type'],
         $_SESSION['login_success'],
@@ -29,9 +30,10 @@ function clear_user_session(): void {
     );
 }
 
-function set_user_session(int $userId, string $username): void {
+function set_user_session(int $userId, string $username, string $role = 'user'): void {
     $_SESSION['user_id'] = $userId;
     $_SESSION['username'] = $username;
+    $_SESSION['user_role'] = $role;
 }
 
 function redirect_after_auth(string $returnTo): void {
