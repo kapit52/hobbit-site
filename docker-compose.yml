@@ -41,6 +41,17 @@ services:
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     volumes:
       - .:/var/www/html
+    # Папки с записью (загрузки фото, логи) лежат в смонтированном с хоста коде,
+    # поэтому их владельца задаёт хост, а не Dockerfile. На Linux хост-владелец ≠
+    # www-data, и Apache не может туда писать («сервер не разрешает» загрузку фото).
+    # Перед стартом Apache (он = root на входе) выставляем владельца и права —
+    # так загрузка работает из коробки на любой машине. exec → Apache становится
+    # PID 1 и корректно ловит сигналы остановки.
+    command: >
+      sh -c "mkdir -p /var/www/html/public/uploads /var/www/html/logs &&
+      chown -R www-data:www-data /var/www/html/public/uploads /var/www/html/logs &&
+      chmod -R 0775 /var/www/html/public/uploads /var/www/html/logs &&
+      exec apache2-foreground"
     depends_on:
       db:
         condition: service_healthy

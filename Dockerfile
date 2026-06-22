@@ -1,7 +1,8 @@
 FROM php:8.2-apache
 
 RUN docker-php-ext-install mysqli \
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    && echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 # Веб-корень приложения — подпапка public/ (туда переехали все отдаваемые файлы).
 RUN sed -ri -e 's!DocumentRoot /var/www/html!DocumentRoot /var/www/html/public!g' /etc/apache2/sites-available/*.conf \
